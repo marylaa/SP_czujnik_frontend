@@ -32,22 +32,22 @@ const MainPage = () => {
     const getAverageTemperature = () => {
         const currentDate = date[date.length - 1];
         const previousDate = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
-        console.log(currentDate);
-        console.log(previousDate);
+        //console.log(currentDate);
+        //console.log(previousDate);
         var counter = 0;
         var temperatures = 0;
 
         for(var i = 0; i < date.length; i++) {
             const checkDate = new Date(date[i]);
-            console.log(checkDate);
+            //console.log(checkDate);
             if (checkDate >= previousDate && checkDate <= currentDate) {
                 counter++;
                 temperatures = temperatures + parseFloat(temperature[i]);
-                console.log("weszło")
+                //console.log("weszło")
             }
         }
         const average = temperatures / counter;
-        console.log(temperatures);
+        //console.log(temperatures);
         setAverageTemperature(average.toFixed(2));
 
     };
@@ -73,7 +73,7 @@ const MainPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('/dane_rzecz.txt');
+                const response = await fetch('/dane_rzeczywiste.txt');
                 const text = await response.text();
                 const csv = Papa.parse(text, {header: false});
                 const parsedData = csv.data;
@@ -88,6 +88,7 @@ const MainPage = () => {
 
     useEffect(() => { //wziecie danych z ostatnich 3dni (DO ZROBIENIA SREDNIA Z GODZINY)
         if (data) {
+            //console.log(data)
             const currentDate = new Date();
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
@@ -107,25 +108,24 @@ const MainPage = () => {
             var counter = 0;
             var valueHumidity = 0;
             var valueTemperature = 0;
-            var previousDate = new Date(data[0]);
+            var previousDate = new Date(data[0][0]);
             var previousHour = previousDate.getHours();
 
             for (var i = 0; i < dates.length; i++) {
-                data.forEach((stat) => {
-                    const date = new Date(stat[0]);
-                    //console.log(date);
+                for (var j = 0; j < data.length; j++) {
+                    const date = new Date(data[j][0]);
                     const year = date.getFullYear();
                     const month = date.getMonth();
                     const day = date.getDate();
 
                     var dateStat = new Date(year, month, day);
-                    const currentDate = new Date(dates[i]);
+                    const currentDate = new Date(dates[dates.length - i - 1]);
                     if (dateStat.getTime() === currentDate.getTime()) {
                         var hour = date.getHours();
                         if (hour === previousHour) {
                             counter++;
-                            valueHumidity = parseFloat(valueHumidity) + parseFloat(stat[1]);
-                            valueTemperature = parseFloat(valueTemperature) + parseFloat(stat[2]);
+                            valueHumidity = parseFloat(valueHumidity) + parseFloat(data[j][1]);
+                            valueTemperature = parseFloat(valueTemperature) + parseFloat(data[j][2]);
                         } else {
                             var averageHumidity = parseFloat(valueHumidity) / parseFloat(counter);
                             var averageTemperature = parseFloat(valueTemperature) / parseFloat(counter);
@@ -134,19 +134,24 @@ const MainPage = () => {
                             list_temp.push(averageTemperature);
 
                             counter = 1;
-                            valueHumidity = stat[1];
-                            valueTemperature = stat[2];
+                            valueHumidity = data[j][1];
+                            valueTemperature = data[j][2];
                             previousHour = hour;
                             previousDate = date;
                         }
                     }
-                })
+                }
             };
+
+            var averageHumidity = parseFloat(valueHumidity) / parseFloat(counter);
+            var averageTemperature = parseFloat(valueTemperature) / parseFloat(counter);
+            datesWithHours.push(previousDate);
+            list_hum.push(averageHumidity);
+            list_temp.push(averageTemperature);
 
             setHumidity(list_hum.map(x => parseFloat(x)));
             setTemperature(list_temp.map(x => parseFloat(x)));
             setDate(datesWithHours.map(x => new Date(x)));
-            console.log(temperature);
 
             getCurrentTemperature();
             getCurrentHumidity();
@@ -167,7 +172,7 @@ const MainPage = () => {
                 tab.push({x: date[i], y: temperature[i]});
             }
             setTemperaturePoints(tab);
-            console.log(temperaturePoints)
+            //console.log(temperaturePoints)
 
             getAverageTemperature();
         }
@@ -233,7 +238,7 @@ const MainPage = () => {
     return (
         <div>
             <Typography variant="h4" style={{backgroundColor: '#812aa4', color: 'white', padding: '10px'}}>
-                Weather application
+                Weather station
             </Typography>
             <div style={{display: "flex", width: "100%", justifyContent: "space-evenly", marginTop: "30px"}}>
                 <div style={{
