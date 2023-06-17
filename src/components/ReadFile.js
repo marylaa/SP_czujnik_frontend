@@ -18,13 +18,13 @@ const MainPage = () => {
     const [temperaturePoints, setTemperaturePoints] = useState([])
 
     const getCurrentTemperature = () => {
-        const temperature = parseFloat(data[data.length - 1][2]);
+        const temperature = parseFloat(data[data.length - 2][2]);
         const temperatureWithTwoDecimals = temperature.toFixed(2);
         setCurrentTemperature(parseFloat(temperatureWithTwoDecimals));
     };
 
     const getCurrentHumidity = () => {
-        const humidity = parseFloat(data[data.length - 1][1]);
+        const humidity = parseFloat(data[data.length - 2][1]);
         const humidityWithTwoDecimals = humidity.toFixed(2);
         setCurrentHumidity(parseFloat(humidityWithTwoDecimals));
     };
@@ -32,22 +32,17 @@ const MainPage = () => {
     const getAverageTemperature = () => {
         const currentDate = date[date.length - 1];
         const previousDate = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
-        //console.log(currentDate);
-        //console.log(previousDate);
         var counter = 0;
         var temperatures = 0;
 
         for(var i = 0; i < date.length; i++) {
             const checkDate = new Date(date[i]);
-            //console.log(checkDate);
             if (checkDate >= previousDate && checkDate <= currentDate) {
                 counter++;
                 temperatures = temperatures + parseFloat(temperature[i]);
-                //console.log("weszło")
             }
         }
         const average = temperatures / counter;
-        //console.log(temperatures);
         setAverageTemperature(average.toFixed(2));
 
     };
@@ -86,9 +81,8 @@ const MainPage = () => {
         fetchData();
     }, []);
 
-    useEffect(() => { //wziecie danych z ostatnich 3dni (DO ZROBIENIA SREDNIA Z GODZINY)
+    useEffect(() => { //wziecie danych z ostatnich 3dni
         if (data) {
-            //console.log(data)
             const currentDate = new Date();
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
@@ -172,8 +166,6 @@ const MainPage = () => {
                 tab.push({x: date[i], y: temperature[i]});
             }
             setTemperaturePoints(tab);
-            //console.log(temperaturePoints)
-
             getAverageTemperature();
         }
     }, [temperature])
