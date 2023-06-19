@@ -68,7 +68,7 @@ const MainPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('/dane_rzeczywiste.txt');
+                const response = await fetch('/dane_nowe.txt');
                 const text = await response.text();
                 const csv = Papa.parse(text, {header: false});
                 const parsedData = csv.data;
@@ -102,9 +102,11 @@ const MainPage = () => {
             var counter = 0;
             var valueHumidity = 0;
             var valueTemperature = 0;
-            var previousDate = new Date(data[0][0]);
-            var previousHour = previousDate.getHours();
+            //var previousDate = new Date(dates[2]);
+            //var previousHour = previousDate.getHours();
 
+            var previousHour =null;
+            var previousDate = null;
             for (var i = 0; i < dates.length; i++) {
                 for (var j = 0; j < data.length; j++) {
                     const date = new Date(data[j][0]);
@@ -114,7 +116,13 @@ const MainPage = () => {
 
                     var dateStat = new Date(year, month, day);
                     const currentDate = new Date(dates[dates.length - i - 1]);
+
                     if (dateStat.getTime() === currentDate.getTime()) {
+                        //console.log(dateStat)
+                        if(previousDate == null || previousHour == null){
+                            previousDate = date;
+                            previousHour = date.getHours();
+                        }
                         var hour = date.getHours();
                         if (hour === previousHour) {
                             counter++;
@@ -124,6 +132,7 @@ const MainPage = () => {
                             var averageHumidity = parseFloat(valueHumidity) / parseFloat(counter);
                             var averageTemperature = parseFloat(valueTemperature) / parseFloat(counter);
                             datesWithHours.push(previousDate);
+                            //console.log(previousDate);
                             list_hum.push(averageHumidity);
                             list_temp.push(averageTemperature);
 
@@ -185,6 +194,7 @@ const MainPage = () => {
         }
     }, [humidity])
 
+    //console.log(humidityPoints)
 
     const options = {
         zoomEnabled: true,
