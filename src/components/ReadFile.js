@@ -20,13 +20,13 @@ const MainPage = () => {
     const getCurrentTemperature = () => {
         const temperature = parseFloat(data[data.length - 2][2]);
         const temperatureWithTwoDecimals = temperature.toFixed(2);
-        setCurrentTemperature(parseFloat(temperatureWithTwoDecimals));
+        setCurrentTemperature(temperatureWithTwoDecimals);
     };
 
     const getCurrentHumidity = () => {
         const humidity = parseFloat(data[data.length - 2][1]);
         const humidityWithTwoDecimals = humidity.toFixed(2);
-        setCurrentHumidity(parseFloat(humidityWithTwoDecimals));
+        setCurrentHumidity(humidityWithTwoDecimals);
     };
 
     const getAverageTemperature = () => {
@@ -131,9 +131,12 @@ const MainPage = () => {
                             valueHumidity = data[j][1];
                             valueTemperature = data[j][2];
                             previousHour = hour;
-                            previousDate = date;
+
                         }
+
+                        previousDate = date;
                     }
+
                 }
             };
 
@@ -181,6 +184,7 @@ const MainPage = () => {
             getAverageHumidity();
         }
     }, [humidity])
+
 
     const options = {
         zoomEnabled: true,
